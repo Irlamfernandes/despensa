@@ -1,41 +1,71 @@
-This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
+# Despensa — guia para agentes
 
-## Expo has changed — do not trust your training data
+App Android (Expo + React Native) para registrar compras de mercado e acompanhar
+gastos, preços e reposição de produtos. Uso pessoal de um casal; dados locais em
+SQLite (sincronização com Supabase planejada).
 
-Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
+Este arquivo é um **mapa**. Os detalhes estão em `docs/` — leia o documento da
+área antes de mexer nela.
 
-1. Read the major version of the `expo` package in `package.json`.
-2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v<major>.0.0/`
-3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections to common LLM misconceptions. Follow its links to the specific page you need; never answer from memory.
+| Assunto                                  | Documento                                          |
+| ---------------------------------------- | -------------------------------------------------- |
+| Camadas, fronteiras e fluxo de dados     | [docs/arquitetura.md](docs/arquitetura.md)         |
+| Tabelas, migrações e convenções do banco | [docs/modelo-de-dados.md](docs/modelo-de-dados.md) |
+| Padrões de código e limites de qualidade | [docs/qualidade.md](docs/qualidade.md)             |
+| Próximas etapas (NFC-e, Supabase, APK)   | [docs/roadmap.md](docs/roadmap.md)                 |
 
-## Commands
-
-Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
+## Comandos
 
 ```bash
-npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
-npx expo start              # start the dev server
-npx expo lint               # lint
-npx tsc --noEmit            # typecheck
-npx expo-doctor             # diagnose dependency and config issues
-npx expo install --fix      # fix incompatible package versions
+npm run check        # typecheck + lint + testes — rode antes de dizer que terminou
+npm test             # só os testes (jest)
+npm run format       # prettier
+npm run doctor       # expo-doctor: dependências e configuração
+npx expo start       # servidor de desenvolvimento
+npx expo install <p> # SEMPRE use para instalar pacotes (resolve versões do SDK)
 ```
 
-Run lint and typecheck before declaring any task done.
+Uma tarefa só está pronta quando `npm run check` passa sem erros nem avisos.
 
-## Navigation & Routing
+## Regras que valem sempre
 
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
-- Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
-- Docs: https://docs.expo.dev/router/introduction.md
+1. **Expo muda a cada SDK.** Antes de usar qualquer API do Expo/React Native,
+   confira a versão em `package.json` (hoje SDK 57) e leia
+   `https://docs.expo.dev/versions/v57.0.0/`. Para o resto, comece por
+   `https://docs.expo.dev/llms.txt`. Não confie na memória.
+2. **Só Android.** Não adicione código, config ou dependências de iOS/web.
+3. **Camadas** (verificadas pelo ESLint): `domain` é TypeScript puro;
+   `data` acessa o banco; `ui` só recebe props; telas em `src/app` juntam tudo.
+4. **Regra de negócio vai para `src/domain`, com teste.** Telas não calculam.
+5. **Dinheiro em centavos** (inteiro). **Datas de compra em `AAAA-MM-DD`.**
+6. **Banco:** só por repositórios de `src/data`, sempre com parâmetros (`?`),
+   nunca concatenando valores no SQL. Mudou o esquema? Nova migração no fim de
+   `src/data/migracoes.ts` — nunca edite uma existente.
+7. **Limites de qualidade não se negociam:** se o lint acusar complexidade ou
+   tamanho, divida a função. Não aumente limites nem use `eslint-disable`.
+8. **Nunca** versione `.env`, chaves, bancos `.db` ou dados reais de compras.
+   O repositório é público.
+9. Pastas `android/` e `ios/` são geradas (CNG). Não crie nem edite; configure
+   pelo `app.json` e config plugins.
 
-## Building with EAS
+## Onde fica cada coisa
 
-Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submit`) and to ship over-the-air updates (`eas update`) — no local Xcode or Android Studio required. Run EAS CLI as `bunx eas-cli <command>` in Bun projects, or `npx eas-cli@latest <command>` otherwise; substitute that for bare `eas` in docs examples.
-Docs: https://docs.expo.dev/eas/index.md
+```
+src/
+  app/        telas (Expo Router): (abas)/ = Resumo, Compras, Produtos
+  domain/     regras puras + testes em __tests__/
+  data/       SQLite: migrações, repositórios, hooks; testes com SQLite real
+  ui/         componentes visuais e tema
+docs/         documentação (fonte da verdade)
+```
 
-## Rules
+## Idioma
 
-- If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
-- Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
-- Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+Código, comentários, commits e documentação em **português do Brasil**.
+Commits seguem Conventional Commits (`feat:`, `fix:`, `docs:`...), checado pelo commitlint.
+
+## Quando errar
+
+Se você (agente) cometer um erro que poderia se repetir, não corrija só o caso:
+acrescente a proteção — uma regra de lint, um teste ou uma linha neste arquivo
+ou em `docs/`. É assim que o harness melhora.

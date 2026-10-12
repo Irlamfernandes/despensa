@@ -39,3 +39,11 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# env (o .env nunca vai para o GitHub; use o .env.example como modelo)
+.env
+.env.*
+!.env.example
+
+# testes
+coverage/
