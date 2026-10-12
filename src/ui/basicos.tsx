@@ -8,10 +8,18 @@ interface ComFilhos {
   children: ReactNode;
 }
 
+interface TelaProps extends ComFilhos {
+  /** Telas das abas não têm cabeçalho: reservam o espaço da barra de status. */
+  semCabecalho?: boolean;
+}
+
 /** Tela com fundo, rolagem e respeito às áreas seguras (status bar, gestos). */
-export function Tela({ children }: ComFilhos) {
+export function Tela({ children, semCabecalho = false }: TelaProps) {
   return (
-    <SafeAreaView style={estilos.tela} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView
+      style={estilos.tela}
+      edges={semCabecalho ? ['top', 'bottom', 'left', 'right'] : ['bottom', 'left', 'right']}
+    >
       <ScrollView contentContainerStyle={estilos.conteudo} keyboardShouldPersistTaps="handled">
         {children}
       </ScrollView>

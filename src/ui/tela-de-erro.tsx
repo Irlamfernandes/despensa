@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Cartao, TextoSuave, Titulo } from './basicos';
+import { Cartao, Titulo } from './basicos';
 import { Botao } from './controles';
 import { cores, espaco, fonte } from './tema';
 
@@ -15,7 +15,6 @@ export function TelaDeErro({ erro, onTentarDeNovo }: TelaDeErroProps) {
     <View style={estilos.tela}>
       <Cartao>
         <Titulo>Algo deu errado</Titulo>
-        <TextoSuave>O erro também foi registrado no log do app.</TextoSuave>
         <Text style={estilos.mensagem} selectable>
           {erro.message}
         </Text>

@@ -73,7 +73,7 @@ function ConteudoDoPainel({ painel }: { painel: Painel }) {
 export default function TelaDeResumo() {
   const carga = useConsulta(carregarPainel);
   return (
-    <Tela>
+    <Tela semCabecalho>
       <Titulo>Despensa</Titulo>
       <Botao titulo="Escanear nota fiscal" onPress={() => router.push('/compra/escanear')} />
       <Botao

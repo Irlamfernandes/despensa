@@ -37,8 +37,8 @@ câmera (expo-camera)
   `consultadfe`; o `www4` fica como segunda tentativa.
 - **Validado num Android real (out/2026), pelo 4G:** consultadfe → redireciona para
   `http://...resultadoQRCode2.faces` → o app troca para https → nota lida em ~4 s.
-- Quando a página não tem `<title>`, a WebView usa a URL como título: mascare
-  também o título nos logs (a URL tem a chave da nota).
+- Quando a página não tem `<title>`, a WebView usa a URL como título (que tem a
+  chave da nota): cuidado ao registrar esses valores em logs temporários.
 
 ## Layout da página (padrão nacional da NFC-e)
 

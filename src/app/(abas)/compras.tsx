@@ -15,7 +15,7 @@ function rotuloDeItens(quantidade: number): string {
 export default function TelaDeCompras() {
   const carga = useConsulta(listarCompras);
   return (
-    <Tela>
+    <Tela semCabecalho>
       <Titulo>Compras</Titulo>
       <Botao titulo="Escanear nota fiscal" onPress={() => router.push('/compra/escanear')} />
       <Botao

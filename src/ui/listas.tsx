@@ -63,6 +63,6 @@ const estilos = StyleSheet.create({
   textos: { flex: 1, gap: 2 },
   titulo: { fontSize: fonte.media, color: cores.texto },
   subtitulo: { fontSize: fonte.pequena, color: cores.textoSuave },
-  valor: { fontSize: fonte.media, fontWeight: '600', color: cores.texto },
+  valor: { flexShrink: 0, fontSize: fonte.media, fontWeight: '600', color: cores.texto },
   carregando: { paddingVertical: espaco.xl },
 });

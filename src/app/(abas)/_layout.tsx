@@ -1,11 +1,6 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
-import { criarLog } from '@/log';
-
-const log = criarLog('abas');
-
 export default function LayoutDasAbas() {
-  log.info('montando abas');
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">

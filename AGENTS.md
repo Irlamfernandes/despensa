@@ -54,9 +54,9 @@ Uma tarefa só está pronta quando `npm run check` passa sem erros nem avisos.
 
 ## Diagnóstico
 
-- Logs: `criarLog('area')` de `src/log.ts` (único lugar com `console.log`). Saem no
-  terminal do `npx expo start`, prefixados com `[despensa:area]`. Não registre dados
-  pessoais completos: use `mascarar`/`mascararUrl` para a chave da NFC-e.
+- O app não tem logs. Para investigar, adicione `console.log` temporário, veja no
+  terminal do `npx expo start` e remova antes do commit (o lint barra `console.log`).
+  Nunca registre a chave da NFC-e inteira: a URL e o título da página a contêm.
 - Erros de tela aparecem na `TelaDeErro` (boundary no `src/app/_layout.tsx`), não em tela branca.
 
 ## Onde fica cada coisa

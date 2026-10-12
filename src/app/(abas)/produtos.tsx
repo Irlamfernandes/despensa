@@ -10,7 +10,7 @@ import { Carregavel, Linha } from '@/ui/listas';
 export default function TelaDeProdutos() {
   const carga = useConsulta(listarProdutos);
   return (
-    <Tela>
+    <Tela semCabecalho>
       <Titulo>Produtos</Titulo>
       <Carregavel carga={carga}>
         {(produtos) =>
