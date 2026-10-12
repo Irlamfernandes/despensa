@@ -4,9 +4,12 @@ import { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { lerQrDaNota } from '@/domain/nfce/qr';
+import { criarLog, mascararUrl } from '@/log';
 import { Cartao, Erros, Tela, TelaFixa, TextoSuave, Titulo } from '@/ui/basicos';
 import { Botao } from '@/ui/controles';
 import { raio } from '@/ui/tema';
+
+const log = criarLog('camera');
 
 function LeitorDeQr() {
   const jaLeu = useRef(false);
@@ -15,6 +18,7 @@ function LeitorDeQr() {
   const aoLer = ({ data }: BarcodeScanningResult) => {
     if (jaLeu.current) return;
     const resultado = lerQrDaNota(data);
+    log.info('QR Code lido', { valido: resultado.ok, conteudo: mascararUrl(data) });
     if (!resultado.ok) {
       setErros(resultado.erros);
       return;
@@ -46,6 +50,7 @@ function LeitorDeQr() {
 
 export default function TelaDeEscanear() {
   const [permissao, pedirPermissao] = useCameraPermissions();
+  log.info('permissão da câmera', { estado: permissao?.status ?? 'carregando' });
   if (!permissao) return null;
   if (permissao.granted) return <LeitorDeQr />;
   return (

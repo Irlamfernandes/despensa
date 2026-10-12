@@ -35,6 +35,11 @@ module.exports = defineConfig([
     },
   },
   {
+    // Único arquivo que escreve no console (log de diagnóstico).
+    files: ['src/log.ts'],
+    rules: { 'no-console': 'off' },
+  },
+  {
     // Testes descrevem casos em blocos longos; os limites de tamanho não se aplicam.
     files: ['**/__tests__/**'],
     rules: {
@@ -56,8 +61,8 @@ module.exports = defineConfig([
                 'src/domain deve ser TypeScript puro (sem React/Expo). Veja docs/arquitetura.md.',
             },
             {
-              group: ['@/data', '@/data/*', '@/ui', '@/ui/*'],
-              message: 'src/domain não depende de nenhuma outra camada.',
+              group: ['@/data', '@/data/*', '@/ui', '@/ui/*', '@/log'],
+              message: 'src/domain não depende de nenhuma outra camada (nem do log).',
             },
             camadasDeTela,
           ],

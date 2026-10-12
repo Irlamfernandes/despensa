@@ -1,4 +1,8 @@
+import { criarLog } from '@/log';
+
 import type { Banco } from './banco';
+
+const log = criarLog('banco');
 
 // Cada posição da lista é uma versão do banco (PRAGMA user_version).
 // Nunca altere uma migração já publicada: acrescente uma nova no fim.
@@ -76,11 +80,13 @@ export async function migrar(banco: Banco): Promise<void> {
   await banco.execAsync('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
   const linha = await banco.getFirstAsync<{ user_version: number }>('PRAGMA user_version', []);
   const versao = linha?.user_version ?? 0;
+  log.info('versão do banco', { atual: versao, esperada: VERSAO_ATUAL });
 
   for (const [indice, sql] of MIGRACOES.slice(versao).entries()) {
     await banco.withTransactionAsync(async () => {
       await banco.execAsync(sql);
       await banco.execAsync(`PRAGMA user_version = ${versao + indice + 1}`);
     });
+    log.info('migração aplicada', { versao: versao + indice + 1 });
   }
 }

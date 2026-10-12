@@ -3,8 +3,11 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
 
 import type { Carga } from '@/domain/carga';
+import { criarLog } from '@/log';
 
 import type { Banco } from './banco';
+
+const log = criarLog('consulta');
 
 export type Consulta<T> = (banco: Banco) => Promise<T>;
 
@@ -25,9 +28,18 @@ export function useConsulta<T>(consulta: Consulta<T>): Carga<T> {
   useFocusEffect(
     useCallback(() => {
       let ativa = true;
+      const nome = consulta.name || 'anônima';
+      const inicio = Date.now();
+      log.info('consultando', { consulta: nome });
       consulta(banco).then(
-        (dados) => ativa && setCarga({ status: 'pronto', dados }),
-        (erro: unknown) => ativa && setCarga({ status: 'erro', erro }),
+        (dados) => {
+          log.info('consulta pronta', { consulta: nome, ms: Date.now() - inicio });
+          if (ativa) setCarga({ status: 'pronto', dados });
+        },
+        (erro: unknown) => {
+          log.erro('consulta falhou', erro, { consulta: nome });
+          if (ativa) setCarga({ status: 'erro', erro });
+        },
       );
       return () => {
         ativa = false;

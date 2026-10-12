@@ -52,6 +52,13 @@ Uma tarefa só está pronta quando `npm run check` passa sem erros nem avisos.
 10. Pastas `android/` e `ios/` são geradas (CNG). Não crie nem edite; configure
     pelo `app.json` e config plugins.
 
+## Diagnóstico
+
+- Logs: `criarLog('area')` de `src/log.ts` (único lugar com `console.log`). Saem no
+  terminal do `npx expo start`, prefixados com `[despensa:area]`. Não registre dados
+  pessoais completos: use `mascarar`/`mascararUrl` para a chave da NFC-e.
+- Erros de tela aparecem na `TelaDeErro` (boundary no `src/app/_layout.tsx`), não em tela branca.
+
 ## Onde fica cada coisa
 
 ```
