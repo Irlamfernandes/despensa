@@ -32,8 +32,13 @@ câmera (expo-camera)
 - O portal **bloqueia IPs listados em bases de abuso**, o que inclui IPs de data
   center e alguns IPs residenciais. No teste, o Wi-Fi de casa foi bloqueado e o
   4G funcionou. A mensagem de falha sugere usar os dados móveis.
-- O certificado do `https://www4...` é incompleto (falta a cadeia intermediária).
-  Se falhar, a segunda URL tentada é a consulta oficial em `consultadfe`.
+- O certificado do `https://www4...` é incompleto: no Android dá "certificate
+  authority is not trusted". Por isso a primeira URL é a consulta oficial em
+  `consultadfe`; o `www4` fica como segunda tentativa.
+- **Validado num Android real (out/2026), pelo 4G:** consultadfe → redireciona para
+  `http://...resultadoQRCode2.faces` → o app troca para https → nota lida em ~4 s.
+- Quando a página não tem `<title>`, a WebView usa a URL como título: mascare
+  também o título nos logs (a URL tem a chave da nota).
 
 ## Layout da página (padrão nacional da NFC-e)
 

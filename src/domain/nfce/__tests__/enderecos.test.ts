@@ -21,15 +21,15 @@ describe('corrigirParaHttps', () => {
 });
 
 describe('enderecosDeConsulta', () => {
-  it('tenta primeiro o link do QR Code em https e depois a consulta oficial', () => {
+  it('tenta primeiro a consulta oficial e depois o link do QR Code em https', () => {
     expect(
       enderecosDeConsulta(
         `http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=${CHAVE}|3|1`,
         CHAVE,
       ),
     ).toEqual([
-      `https://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=${CHAVE}|3|1`,
       `https://consultadfe.fazenda.rj.gov.br/consultaNFCe/QRCode?p=${CHAVE}|3|1`,
+      `https://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=${CHAVE}|3|1`,
     ]);
   });
 

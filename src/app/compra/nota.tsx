@@ -95,7 +95,7 @@ function PaginaDaSefaz({ url, despachar }: { url: string; despachar: Despachar }
           onLoadEnd={(e) =>
             log.info('página carregada', {
               url: mascararUrl(e.nativeEvent.url),
-              titulo: e.nativeEvent.title,
+              titulo: mascararUrl(e.nativeEvent.title),
             })
           }
           onHttpError={(e) =>

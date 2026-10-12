@@ -35,13 +35,15 @@ export function corrigirParaHttps(url: string): string | null {
 }
 
 /**
- * Endereços para tentar, em ordem: o próprio link do QR Code (em https) e, se
- * ele falhar, a consulta oficial montada a partir da chave.
+ * Endereços para tentar, em ordem: a consulta oficial montada a partir da chave
+ * e, se ela falhar, o próprio link do QR Code em https. Testado num Android real
+ * (out/2026): o https do www4 falha por certificado não confiável, então a
+ * consulta oficial vem primeiro.
  */
 export function enderecosDeConsulta(conteudoDoQr: string, chave: string): string[] {
   const doQr = /^https?:\/\//i.test(conteudoDoQr)
     ? (corrigirParaHttps(conteudoDoQr) ?? conteudoDoQr)
     : null;
   const oficial = `${CONSULTA_RJ}?p=${chave}|3|1`;
-  return [...new Set([doQr, oficial].filter((url): url is string => url !== null))];
+  return [...new Set([oficial, doQr].filter((url): url is string => url !== null))];
 }
