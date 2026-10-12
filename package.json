@@ -43,7 +43,7 @@
     "format": "prettier --write .",
     "test": "jest",
     "check": "npm run typecheck && npm run lint && npm run test -- --ci",
-    "doctor": "expo-doctor",
+    "doctor": "npx --yes expo-doctor",
     "prepare": "husky"
   },
   "private": true,

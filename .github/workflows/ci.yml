@@ -14,8 +14,8 @@ jobs:
     name: Tipos, lint e testes
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: npm
@@ -26,10 +26,15 @@ jobs:
   segredos:
     name: Varredura de segredos
     runs-on: ubuntu-latest
+    env:
+      GITLEAKS_VERSION: 8.18.2
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Instalar gitleaks
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz gitleaks
+      - name: Varrer todo o histórico
+        run: ./gitleaks detect --source . --redact --verbose

@@ -45,8 +45,11 @@ Uma tarefa só está pronta quando `npm run check` passa sem erros nem avisos.
    tamanho, divida a função. Não aumente limites nem use `eslint-disable`.
 8. **Nunca** versione `.env`, chaves, bancos `.db` ou dados reais de compras.
    O repositório é público.
-9. Pastas `android/` e `ios/` são geradas (CNG). Não crie nem edite; configure
-   pelo `app.json` e config plugins.
+9. **Teste comandos do jeito que o CI roda:** sempre `npm run <script>`, nunca
+   só `npx <ferramenta>`. Um script que chama um binário não instalado no
+   projeto funciona na sua máquina (pelo cache do npx) e quebra no CI.
+10. Pastas `android/` e `ios/` são geradas (CNG). Não crie nem edite; configure
+    pelo `app.json` e config plugins.
 
 ## Onde fica cada coisa
 
