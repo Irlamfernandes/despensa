@@ -101,3 +101,9 @@ export function validarCompra(compra: CompraRascunho): Resultado<CompraValida> {
     },
   };
 }
+
+/** Desconto da compra: quanto a soma dos itens passa do total pago (zero se não houver). */
+export function descontoDaCompra(compra: CompraValida): Centavos {
+  const soma = compra.itens.reduce((total, item) => total + item.total, 0);
+  return Math.max(0, soma - compra.total);
+}

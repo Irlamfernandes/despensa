@@ -58,20 +58,31 @@ async function inserirItem(banco: Banco, compraId: string, item: ItemValido): Pr
   );
 }
 
-/** Grava a compra, o mercado e os produtos novos numa única transação. Devolve o id da compra. */
+/** Dados extras de uma compra importada da NFC-e. */
+export interface OrigemNfce {
+  chave: string;
+  cnpj: string | null;
+}
+
+/**
+ * Grava a compra, o mercado e os produtos novos numa única transação. Devolve o
+ * id da compra. Com `nfce`, a compra fica marcada com a chave da nota, e o banco
+ * recusa importar a mesma nota duas vezes.
+ */
 export async function salvarCompra(
   banco: Banco,
   compra: CompraValida,
-  origem: OrigemDaCompra = 'manual',
+  nfce?: OrigemNfce,
 ): Promise<string> {
   const id = novoId();
+  const origem: OrigemDaCompra = nfce ? 'nfce' : 'manual';
   await banco.withTransactionAsync(async () => {
-    const mercadoId = await buscarOuCriarMercado(banco, compra.mercado);
+    const mercadoId = await buscarOuCriarMercado(banco, { nome: compra.mercado, cnpj: nfce?.cnpj });
     const agora = agoraISO();
     await banco.runAsync(
-      `INSERT INTO compras (id, mercado_id, data, total, origem, criado_em, atualizado_em)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [id, mercadoId, compra.data, compra.total, origem, agora, agora],
+      `INSERT INTO compras (id, mercado_id, data, total, origem, chave_nfce, criado_em, atualizado_em)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, mercadoId, compra.data, compra.total, origem, nfce?.chave ?? null, agora, agora],
     );
     for (const item of compra.itens) {
       await inserirItem(banco, id, item);
@@ -129,4 +140,13 @@ export async function excluirCompra(banco: Banco, id: string): Promise<void> {
       [agora, agora, id],
     );
   });
+}
+
+/** Id da compra já importada com essa chave de NFC-e, ou null. */
+export async function buscarCompraPorChave(banco: Banco, chave: string): Promise<string | null> {
+  const linha = await banco.getFirstAsync<{ id: string }>(
+    'SELECT id FROM compras WHERE chave_nfce = ? AND excluido_em IS NULL',
+    [chave],
+  );
+  return linha?.id ?? null;
 }

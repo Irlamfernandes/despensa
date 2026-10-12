@@ -27,17 +27,38 @@ async function buscarIdPorNome(
   return linha?.id ?? null;
 }
 
-/** Devolve o id do mercado com esse nome (ignorando acento e caixa), criando se não existir. */
-export async function buscarOuCriarMercado(banco: Banco, nome: string): Promise<string> {
-  const existente = await buscarIdPorNome(banco, 'mercados', nome);
+export interface DadosDoMercado {
+  nome: string;
+  cnpj?: string | null;
+}
+
+async function buscarIdPorCnpj(banco: Banco, cnpj: string | null | undefined) {
+  if (!cnpj) return null;
+  const linha = await banco.getFirstAsync<{ id: string }>(
+    'SELECT id FROM mercados WHERE cnpj = ? AND excluido_em IS NULL',
+    [cnpj],
+  );
+  return linha?.id ?? null;
+}
+
+/**
+ * Devolve o id do mercado, criando se não existir. Procura primeiro pelo CNPJ
+ * (vindo da nota fiscal) e depois pelo nome, ignorando acento e caixa.
+ */
+export async function buscarOuCriarMercado(
+  banco: Banco,
+  { nome, cnpj = null }: DadosDoMercado,
+): Promise<string> {
+  const existente =
+    (await buscarIdPorCnpj(banco, cnpj)) ?? (await buscarIdPorNome(banco, 'mercados', nome));
   if (existente) return existente;
 
   const id = novoId();
   const agora = agoraISO();
   await banco.runAsync(
-    `INSERT INTO mercados (id, nome, nome_normalizado, criado_em, atualizado_em)
-     VALUES (?, ?, ?, ?, ?)`,
-    [id, nome.trim(), normalizarNome(nome), agora, agora],
+    `INSERT INTO mercados (id, nome, nome_normalizado, cnpj, criado_em, atualizado_em)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [id, nome.trim(), normalizarNome(nome), cnpj, agora, agora],
   );
   return id;
 }

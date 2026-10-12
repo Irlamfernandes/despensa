@@ -75,7 +75,12 @@ export default function TelaDeResumo() {
   return (
     <Tela>
       <Titulo>Despensa</Titulo>
-      <Botao titulo="Registrar compra" onPress={() => router.push('/compra/nova')} />
+      <Botao titulo="Escanear nota fiscal" onPress={() => router.push('/compra/escanear')} />
+      <Botao
+        titulo="Registrar manualmente"
+        variante="secundario"
+        onPress={() => router.push('/compra/nova')}
+      />
       <Carregavel carga={carga}>{(painel) => <ConteudoDoPainel painel={painel} />}</Carregavel>
     </Tela>
   );

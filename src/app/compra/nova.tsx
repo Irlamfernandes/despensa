@@ -8,11 +8,10 @@ import { useBanco, useConsulta } from '@/data/hooks';
 import { validarCompra, type ItemValido } from '@/domain/compra';
 import { formatarDataBR, hojeISO } from '@/domain/datas';
 import { formatarDinheiro } from '@/domain/dinheiro';
-import { Secao, Tela, TextoSuave } from '@/ui/basicos';
+import { Erros, Secao, Tela, TextoSuave } from '@/ui/basicos';
 import { Botao, Campo } from '@/ui/controles';
 import {
   CampoComSugestoes,
-  Erros,
   FormularioDeItem,
   ListaDeItens,
   type ProdutoConhecido,

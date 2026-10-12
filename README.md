@@ -8,7 +8,10 @@ Feito para uso pessoal, para mim e minha esposa, com os dados no próprio aparel
 
 ## Funcionalidades
 
-- **Registrar compras**: mercado, data e itens (quantidade, unidade e preço).
+- **Escanear a nota fiscal**: lê o QR Code do cupom (NFC-e do RJ), consulta a
+  SEFAZ e importa mercado, data e todos os itens com preço. A mesma nota não
+  entra duas vezes.
+- **Registrar compras manualmente**: mercado, data e itens (quantidade, unidade e preço).
   Mercados e produtos novos entram no catálogo automaticamente, com sugestões
   enquanto você digita.
 - **Resumo do mês**: quanto foi gasto, comparado com a média dos meses anteriores
@@ -18,8 +21,7 @@ Feito para uso pessoal, para mim e minha esposa, com os dados no próprio aparel
 - **Produtos**: preço mais recente em cada mercado (do mais barato ao mais caro)
   e o histórico de preços.
 
-Próximas etapas: leitura do QR Code da nota fiscal (NFC-e) e sincronização entre
-dois celulares. Veja o [roadmap](docs/roadmap.md).
+Próximas etapas: sincronização entre os dois celulares e apelidos de produto. Veja o [roadmap](docs/roadmap.md).
 
 ## Tecnologias
 

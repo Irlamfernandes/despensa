@@ -1,4 +1,10 @@
-import { normalizarNome, validarCompra, validarItem, type ItemValido } from '../compra';
+import {
+  descontoDaCompra,
+  normalizarNome,
+  validarCompra,
+  validarItem,
+  type ItemValido,
+} from '../compra';
 
 describe('normalizarNome', () => {
   it('ignora acento, caixa e espaços extras', () => {
@@ -64,5 +70,27 @@ describe('validarCompra', () => {
         'Adicione pelo menos um item.',
       ],
     });
+  });
+});
+
+describe('descontoDaCompra', () => {
+  const item: ItemValido = {
+    produto: 'X',
+    quantidade: 1,
+    unidade: 'un',
+    precoUnitario: 1000,
+    total: 1000,
+  };
+
+  it('é a diferença entre a soma dos itens e o total pago', () => {
+    expect(
+      descontoDaCompra({ mercado: 'A', data: '2026-10-01', itens: [item, item], total: 1850 }),
+    ).toBe(150);
+  });
+
+  it('nunca é negativo', () => {
+    expect(descontoDaCompra({ mercado: 'A', data: '2026-10-01', itens: [item], total: 1000 })).toBe(
+      0,
+    );
   });
 });

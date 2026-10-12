@@ -7,12 +7,13 @@ SQLite (sincronização com Supabase planejada).
 Este arquivo é um **mapa**. Os detalhes estão em `docs/` — leia o documento da
 área antes de mexer nela.
 
-| Assunto                                  | Documento                                          |
-| ---------------------------------------- | -------------------------------------------------- |
-| Camadas, fronteiras e fluxo de dados     | [docs/arquitetura.md](docs/arquitetura.md)         |
-| Tabelas, migrações e convenções do banco | [docs/modelo-de-dados.md](docs/modelo-de-dados.md) |
-| Padrões de código e limites de qualidade | [docs/qualidade.md](docs/qualidade.md)             |
-| Próximas etapas (NFC-e, Supabase, APK)   | [docs/roadmap.md](docs/roadmap.md)                 |
+| Assunto                                            | Documento                                          |
+| -------------------------------------------------- | -------------------------------------------------- |
+| Camadas, fronteiras e fluxo de dados               | [docs/arquitetura.md](docs/arquitetura.md)         |
+| Tabelas, migrações e convenções do banco           | [docs/modelo-de-dados.md](docs/modelo-de-dados.md) |
+| Leitura da nota fiscal (NFC-e) e o portal da SEFAZ | [docs/nfce.md](docs/nfce.md)                       |
+| Padrões de código e limites de qualidade           | [docs/qualidade.md](docs/qualidade.md)             |
+| Próximas etapas (NFC-e, Supabase, APK)             | [docs/roadmap.md](docs/roadmap.md)                 |
 
 ## Comandos
 
@@ -56,7 +57,7 @@ Uma tarefa só está pronta quando `npm run check` passa sem erros nem avisos.
 ```
 src/
   app/        telas (Expo Router): (abas)/ = Resumo, Compras, Produtos
-  domain/     regras puras + testes em __tests__/
+  domain/     regras puras + testes em __tests__/ (nfce/ = leitura da nota)
   data/       SQLite: migrações, repositórios, hooks; testes com SQLite real
   ui/         componentes visuais e tema
 docs/         documentação (fonte da verdade)

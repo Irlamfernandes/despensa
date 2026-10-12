@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { validarItem, type ItemRascunho, type ItemValido } from '@/domain/compra';
 import { formatarDinheiro } from '@/domain/dinheiro';
 import { formatarQuantidade, UNIDADES, type Unidade } from '@/domain/quantidade';
 import { filtrarSugestoes } from '@/domain/sugestoes';
 
-import { Cartao } from './basicos';
+import { Cartao, Erros } from './basicos';
 import { Botao, Campo, Chips } from './controles';
 import { Linha } from './listas';
-import { cores, espaco, fonte } from './tema';
+import { espaco } from './tema';
 
 interface CampoComSugestoesProps {
   rotulo: string;
@@ -122,14 +122,8 @@ export function ListaDeItens({ itens, onRemover }: ListaDeItensProps) {
   );
 }
 
-export function Erros({ erros }: { erros: readonly string[] }) {
-  if (erros.length === 0) return null;
-  return <Text style={estilos.erro}>{erros.join('\n')}</Text>;
-}
-
 const estilos = StyleSheet.create({
   grupo: { gap: espaco.sm },
   linha: { flexDirection: 'row', gap: espaco.md },
   metade: { flex: 1 },
-  erro: { color: cores.perigo, fontSize: fonte.normal },
 });

@@ -10,12 +10,12 @@ mercados ─┐
           └──< compras ──< itens_compra >── produtos
 ```
 
-| Tabela         | Campos principais                                                             | Observações                                                   |
-| -------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `mercados`     | `nome`, `nome_normalizado`                                                    | Nome único (sem acento/caixa) entre os não excluídos          |
-| `produtos`     | `nome`, `nome_normalizado`, `unidade`                                         | Unidade padrão do produto: `un`, `kg`, `g`, `l`, `ml`         |
-| `compras`      | `mercado_id`, `data`, `total`, `origem`                                       | `origem`: `manual` ou `nfce` (leitura da nota fiscal, futura) |
-| `itens_compra` | `compra_id`, `produto_id`, `quantidade`, `unidade`, `preco_unitario`, `total` | Unidade do item pode diferir da do produto                    |
+| Tabela         | Campos principais                                                             | Observações                                                             |
+| -------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `mercados`     | `nome`, `nome_normalizado`, `cnpj`                                            | Nome e CNPJ únicos entre os não excluídos                               |
+| `produtos`     | `nome`, `nome_normalizado`, `unidade`                                         | Unidade padrão do produto: `un`, `kg`, `g`, `l`, `ml`                   |
+| `compras`      | `mercado_id`, `data`, `total`, `origem`, `chave_nfce`                         | `origem`: `manual` ou `nfce`; `chave_nfce` única entre as não excluídas |
+| `itens_compra` | `compra_id`, `produto_id`, `quantidade`, `unidade`, `preco_unitario`, `total` | Unidade do item pode diferir da do produto                              |
 
 ## Convenções
 
@@ -36,6 +36,11 @@ Pensadas para a sincronização futura com o Supabase (Postgres):
   se um bug escapar da validação do domínio.
 
 ## Migrações
+
+| Versão | O que muda                                                |
+| ------ | --------------------------------------------------------- |
+| 1      | Tabelas iniciais                                          |
+| 2      | `compras.chave_nfce` e `mercados.cnpj` (leitura da NFC-e) |
 
 - A versão do banco fica em `PRAGMA user_version`.
 - `MIGRACOES` é uma lista; a posição `n` leva o banco da versão `n` para `n+1`.

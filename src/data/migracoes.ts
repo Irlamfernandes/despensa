@@ -56,6 +56,17 @@ const MIGRACOES: readonly string[] = [
   CREATE INDEX itens_compra_compra ON itens_compra (compra_id);
   CREATE INDEX itens_compra_produto ON itens_compra (produto_id);
   `,
+  // 2: leitura da NFC-e. A chave impede importar o mesmo cupom duas vezes; o CNPJ
+  // identifica o mercado mesmo que o nome seja editado depois.
+  `
+  ALTER TABLE compras ADD COLUMN chave_nfce TEXT;
+  CREATE UNIQUE INDEX compras_chave_nfce_unica ON compras (chave_nfce)
+    WHERE chave_nfce IS NOT NULL AND excluido_em IS NULL;
+
+  ALTER TABLE mercados ADD COLUMN cnpj TEXT;
+  CREATE UNIQUE INDEX mercados_cnpj_unico ON mercados (cnpj)
+    WHERE cnpj IS NOT NULL AND excluido_em IS NULL;
+  `,
 ];
 
 export const VERSAO_ATUAL = MIGRACOES.length;

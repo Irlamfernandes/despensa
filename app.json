@@ -16,8 +16,20 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.irlamfernandes.despensa"
     },
-    "platforms": ["android"],
-    "plugins": ["expo-router", "expo-sqlite"],
+    "platforms": [
+      "android"
+    ],
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      [
+        "expo-camera",
+        {
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": true
+        }
+      ]
+    ],
     "scheme": "despensa",
     "experiments": {
       "typedRoutes": true

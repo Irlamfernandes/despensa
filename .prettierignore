@@ -3,3 +3,5 @@ node_modules/
 dist/
 coverage/
 android/
+# páginas reais (sanitizadas) usadas nos testes: mantidas como o site entrega
+**/__tests__/fixtures/

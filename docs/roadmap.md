@@ -7,6 +7,7 @@
 - [x] Resumo: gasto do mês × média dos meses anteriores e gasto por mercado
 - [x] Previsão de reposição ("pode estar acabando")
 - [x] Produto: preço atual por mercado e histórico
+- [x] Leitura da NFC-e do RJ pelo QR Code (WebView), sem importar a mesma nota duas vezes
 - [x] Harness: lint com fronteiras de camadas e limites de complexidade, testes de
       domínio e de SQL, CI
 
@@ -17,19 +18,11 @@
 - Configurar EAS Build (perfil `preview` gerando `.apk`) e EAS Update para
   atualizações sem reinstalar.
 
-### 2. Leitura da NFC-e (cupom fiscal)
+### 2. Melhorias da NFC-e
 
-- Escanear o QR Code do cupom (`expo-camera`).
-- Abrir a página da SEFAZ **numa WebView dentro do app** e extrair os itens da
-  página carregada. Motivo: o portal da SEFAZ-RJ bloqueia IPs de data center
-  (testado em out/2026), então a consulta precisa sair do celular, como um
-  acesso normal pelo navegador. Se houver captcha, o usuário resolve na própria tela.
-- Layout da página da NFC-e é padronizado nacionalmente (tabela de itens com
-  nome, código, quantidade, unidade, valor unitário e total).
-- Nova tabela `apelidos_de_produto` (mercado + código do item na nota → produto),
-  para que "LTE COND MOCOCA 395G" seja reconhecido automaticamente da segunda vez
-  em diante. Sugestão de produto por semelhança de texto, **sem IA**.
-- Validar com um cupom real antes de implementar o parser.
+- Testar no celular com notas de outros mercados (ver docs/nfce.md).
+- Apelidos de produto: ligar o nome da nota a um produto do catálogo, sem IA.
+- Editar o nome do mercado (a nota traz a razão social).
 
 ### 3. Sincronização entre os dois celulares (Supabase)
 

@@ -17,7 +17,12 @@ export default function TelaDeCompras() {
   return (
     <Tela>
       <Titulo>Compras</Titulo>
-      <Botao titulo="Registrar compra" onPress={() => router.push('/compra/nova')} />
+      <Botao titulo="Escanear nota fiscal" onPress={() => router.push('/compra/escanear')} />
+      <Botao
+        titulo="Registrar manualmente"
+        variante="secundario"
+        onPress={() => router.push('/compra/nova')}
+      />
       <Carregavel carga={carga}>
         {(compras) =>
           compras.length === 0 ? (

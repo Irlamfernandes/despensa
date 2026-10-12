@@ -19,6 +19,15 @@ export function Tela({ children }: ComFilhos) {
   );
 }
 
+/** Tela sem rolagem, para conteúdo que ocupa a área toda (câmera, WebView). */
+export function TelaFixa({ children }: ComFilhos) {
+  return (
+    <SafeAreaView style={[estilos.tela, estilos.fixa]} edges={['bottom', 'left', 'right']}>
+      {children}
+    </SafeAreaView>
+  );
+}
+
 export function Titulo({ children }: ComFilhos) {
   return <Text style={estilos.titulo}>{children}</Text>;
 }
@@ -48,8 +57,15 @@ export function Vazio({ children }: ComFilhos) {
   );
 }
 
+/** Mensagens de erro de validação, uma por linha. */
+export function Erros({ erros }: { erros: readonly string[] }) {
+  if (erros.length === 0) return null;
+  return <Text style={estilos.erro}>{erros.join('\n')}</Text>;
+}
+
 const estilos = StyleSheet.create({
   tela: { flex: 1, backgroundColor: cores.fundo },
+  fixa: { padding: espaco.lg, gap: espaco.md },
   conteudo: { padding: espaco.lg, gap: espaco.lg },
   titulo: { fontSize: fonte.grande, fontWeight: '700', color: cores.texto },
   secao: { gap: espaco.sm },
@@ -70,4 +86,5 @@ const estilos = StyleSheet.create({
   cartaoDestaque: { backgroundColor: cores.primariaSuave, borderColor: cores.primariaSuave },
   textoSuave: { fontSize: fonte.normal, color: cores.textoSuave },
   vazio: { paddingVertical: espaco.xl, alignItems: 'center' },
+  erro: { color: cores.perigo, fontSize: fonte.normal },
 });
