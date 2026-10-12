@@ -36,6 +36,10 @@ limite nem use `eslint-disable`.
   arredondamento, meses sem compra).
 - `src/data/__tests__/`: repositórios e migrações com **SQLite real**
   (`better-sqlite3`) via a interface `Banco`.
+- No CI os testes rodam em poucos workers, então vários arquivos dividem o mesmo
+  processo. Antes de culpar o código por uma falha que só aparece no CI, rode
+  `npx jest --ci -i` (tudo num processo). Foi assim que apareceu o problema dos
+  erros do `better-sqlite3` vindos de outro contexto (ver `banco-em-memoria.ts`).
 - Todo bug corrigido ganha um teste que falharia sem a correção.
 
 ## Desempenho
