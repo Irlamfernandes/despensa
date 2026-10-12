@@ -3,7 +3,14 @@ import type { CompraValida } from '@/domain/compra';
 import type { Banco } from '../banco';
 import { listarProdutosDoCatalogo } from '../catalogo';
 import { excluirCompra, salvarCompra } from '../compras';
-import { adicionarNaLista, alterarItemDaLista, carregarLista, removerDaLista } from '../lista';
+import {
+  adicionarNaLista,
+  alterarItemDaLista,
+  carregarLista,
+  diminuirNaLista,
+  removerDaLista,
+  responderEquivalencia,
+} from '../lista';
 import { criarBancoDeTeste } from './banco-em-memoria';
 
 jest.mock('expo-crypto', () => ({ randomUUID: () => jest.requireActual('crypto').randomUUID() }));
@@ -91,6 +98,79 @@ describe('lista de compras', () => {
     const [item] = (await carregarLista(banco)).pendentes;
     await removerDaLista(banco, [item!.id]);
 
-    expect(await carregarLista(banco)).toEqual({ pendentes: [], comprados: [] });
+    expect(await carregarLista(banco)).toEqual({ pendentes: [], comprados: [], sugestoes: [] });
+  });
+});
+
+function compraDe(produto: string, quantidade: number): CompraValida {
+  const item = { produto, quantidade, unidade: 'un' as const, precoUnitario: 100 };
+  const total = quantidade * 100;
+  return { mercado: 'Mercado A', data: '2026-10-12', itens: [{ ...item, total }], total };
+}
+
+describe('nomes diferentes', () => {
+  beforeEach(async () => {
+    await adicionarNaLista(banco, { produto: 'Suco em pó', quantidade: 30, unidade: 'un' });
+    noInstante('2026-10-12T11:00:00.000Z');
+    await salvarCompra(banco, compraDe('SUCO PO TANG LARANJA 25G', 3));
+    await salvarCompra(banco, compraDe('PAPEL HIGIENICO', 1));
+  });
+
+  async function primeiraSugestao() {
+    const { sugestoes } = await carregarLista(banco);
+    expect(sugestoes).toHaveLength(1);
+    const [sugestao] = sugestoes;
+    return {
+      produtoId: sugestao!.item.produtoId,
+      equivalenteId: sugestao!.compra.produtoId,
+      nome: sugestao!.compra.nome,
+    };
+  }
+
+  it('pergunta só sobre o produto de nome parecido', async () => {
+    expect((await primeiraSugestao()).nome).toBe('SUCO PO TANG LARANJA 25G');
+  });
+
+  it('com "sim", desconta agora e nas próximas compras', async () => {
+    const { produtoId, equivalenteId } = await primeiraSugestao();
+    await responderEquivalencia(banco, { produtoId, equivalenteId, equivale: true });
+    await salvarCompra(banco, compraDe('SUCO PO TANG LARANJA 25G', 2));
+
+    const lista = await carregarLista(banco);
+    expect(lista.pendentes).toEqual([expect.objectContaining({ comprado: 5, falta: 25 })]);
+    expect(lista.sugestoes).toEqual([]);
+  });
+
+  it('com "não", não desconta nem pergunta de novo', async () => {
+    const { produtoId, equivalenteId } = await primeiraSugestao();
+    await responderEquivalencia(banco, { produtoId, equivalenteId, equivale: false });
+
+    const lista = await carregarLista(banco);
+    expect(lista.pendentes).toEqual([expect.objectContaining({ falta: 30 })]);
+    expect(lista.sugestoes).toEqual([]);
+  });
+
+  it('mudar de ideia troca a resposta', async () => {
+    const { produtoId, equivalenteId } = await primeiraSugestao();
+    await responderEquivalencia(banco, { produtoId, equivalenteId, equivale: false });
+    await responderEquivalencia(banco, { produtoId, equivalenteId, equivale: true });
+
+    expect((await carregarLista(banco)).pendentes).toEqual([
+      expect.objectContaining({ falta: 27 }),
+    ]);
+  });
+});
+
+describe('diminuirNaLista', () => {
+  it('diminui à mão e remove quando não falta mais nada', async () => {
+    await adicionarNaLista(banco, { produto: 'Arroz', quantidade: 5, unidade: 'un' });
+    const [item] = (await carregarLista(banco)).pendentes;
+
+    await diminuirNaLista(banco, item!, 2);
+    const [depois] = (await carregarLista(banco)).pendentes;
+    expect(depois).toMatchObject({ quantidade: 3, falta: 3 });
+
+    await diminuirNaLista(banco, depois!, 3);
+    expect((await carregarLista(banco)).pendentes).toEqual([]);
   });
 });

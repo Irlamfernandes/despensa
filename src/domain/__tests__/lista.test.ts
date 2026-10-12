@@ -1,5 +1,6 @@
 import {
   descreverSituacao,
+  faltaDepoisDe,
   montarLista,
   situacaoDoItem,
   validarItemDaLista,
@@ -50,6 +51,35 @@ describe('montarLista', () => {
     const lista = montarLista([suco, arroz], [{ itemId: 'l2', quantidade: 1, unidade: 'un' }]);
     expect(lista.pendentes.map((i) => i.produto)).toEqual(['Suco em pó']);
     expect(lista.comprados.map((i) => i.produto)).toEqual(['Arroz']);
+  });
+});
+
+describe('sugestões de equivalência', () => {
+  const candidata = {
+    itemId: 'l1',
+    produtoId: 'p9',
+    nome: 'SUCO PO TANG LARANJA 25G',
+    quantidade: 3,
+    unidade: 'un' as const,
+  };
+
+  it('sugere compra de nome parecido para item pendente', () => {
+    const { sugestoes } = montarLista([suco], [], [candidata]);
+    expect(sugestoes).toEqual([{ item: expect.objectContaining({ id: 'l1' }), compra: candidata }]);
+  });
+
+  it('não sugere nome diferente nem item já comprado', () => {
+    const diferente = { ...candidata, nome: 'REFRESCO TANG' };
+    expect(montarLista([suco], [], [diferente]).sugestoes).toEqual([]);
+    expect(montarLista([suco], [compra(30)], [candidata]).sugestoes).toEqual([]);
+  });
+});
+
+describe('faltaDepoisDe', () => {
+  it('diminui sem passar de zero', () => {
+    const situacao = situacaoDoItem(suco, [compra(3)]);
+    expect(faltaDepoisDe(situacao, 7)).toBe(20);
+    expect(faltaDepoisDe(situacao, 50)).toBe(0);
   });
 });
 

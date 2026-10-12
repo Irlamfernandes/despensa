@@ -83,6 +83,20 @@ const MIGRACOES: readonly string[] = [
   CREATE UNIQUE INDEX lista_de_compras_produto_unico ON lista_de_compras (produto_id)
     WHERE excluido_em IS NULL;
   `,
+  // 4: respostas a "o produto comprado X é o Y da lista?". Com equivale = 1, as
+  // compras de X descontam Y; com 0, o app não pergunta de novo.
+  `
+  CREATE TABLE equivalencias (
+    id TEXT PRIMARY KEY NOT NULL,
+    produto_id TEXT NOT NULL REFERENCES produtos (id),
+    equivalente_id TEXT NOT NULL REFERENCES produtos (id),
+    equivale INTEGER NOT NULL CHECK (equivale IN (0, 1)),
+    criado_em TEXT NOT NULL,
+    atualizado_em TEXT NOT NULL,
+    excluido_em TEXT,
+    UNIQUE (produto_id, equivalente_id)
+  );
+  `,
 ];
 
 export const VERSAO_ATUAL = MIGRACOES.length;

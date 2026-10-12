@@ -5,7 +5,7 @@ import {
   type ItemDaListaRascunho,
   type ItemDaListaValido,
 } from '@/domain/lista';
-import { UNIDADES } from '@/domain/quantidade';
+import { lerQuantidade, UNIDADES, type Unidade } from '@/domain/quantidade';
 
 import { Cartao, Erros } from './basicos';
 import { Botao, Campo, Chips } from './controles';
@@ -72,6 +72,37 @@ export function FormularioDaLista({
       />
       <Erros erros={erros} />
       <Botao titulo={rotuloDoBotao} onPress={salvar} desabilitado={salvando} />
+    </Cartao>
+  );
+}
+
+interface FormularioDeDiminuirProps {
+  unidade: Unidade;
+  onDiminuir: (quantidade: number) => Promise<void>;
+}
+
+/** "Comprei 3": desconta da lista uma compra que não foi registrada no app. */
+export function FormularioDeDiminuir({ unidade, onDiminuir }: FormularioDeDiminuirProps) {
+  const [texto, setTexto] = useState('1');
+  const [erros, setErros] = useState<string[]>([]);
+
+  const diminuir = async () => {
+    const quantidade = lerQuantidade(texto);
+    setErros(quantidade === null ? ['Quantidade inválida.'] : []);
+    if (quantidade === null) return;
+    await onDiminuir(quantidade).catch(() => setErros(['Não foi possível salvar. Tente de novo.']));
+  };
+
+  return (
+    <Cartao>
+      <Campo
+        rotulo={`Quanto você comprou (${unidade})`}
+        value={texto}
+        onChangeText={setTexto}
+        keyboardType="decimal-pad"
+      />
+      <Erros erros={erros} />
+      <Botao titulo="Diminuir da lista" variante="secundario" onPress={diminuir} />
     </Cartao>
   );
 }

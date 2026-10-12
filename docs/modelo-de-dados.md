@@ -46,8 +46,14 @@ partir dos itens de compra do mesmo produto cujas compras foram registradas
 - Alterar a quantidade de um item atualiza `desde`: o novo número já é o que falta.
 - Compra em outra unidade (lista em `un`, nota em `kg`) resolve o item, porque não
   dá para converter.
-- O vínculo é pelo produto do catálogo: o nome na lista precisa ser o mesmo da
-  nota. Apelidos de produto (roadmap) vão resolver nomes diferentes.
+- O vínculo é pelo produto do catálogo. Para nomes diferentes ("Suco em pó" na
+  lista, "SUCO PO TANG 25G" na nota), `src/domain/semelhanca.ts` compara as
+  palavras (sem acento, medidas e preposições; abreviações a partir de 4 letras)
+  e a aba Lista pergunta se é o mesmo produto. A resposta fica em
+  `equivalencias` (`produto_id` = produto da lista, `equivalente_id` = produto
+  comprado, `equivale` 1 ou 0): com sim, as compras do equivalente descontam o
+  item agora e nas próximas listas; com não, a pergunta não volta.
+- "Comprei sem registrar": diminui à mão (`diminuirNaLista`); se zerar, o item sai.
 
 ## Mercados
 
@@ -62,6 +68,7 @@ partir dos itens de compra do mesmo produto cujas compras foram registradas
 | 1      | Tabelas iniciais                                          |
 | 2      | `compras.chave_nfce` e `mercados.cnpj` (leitura da NFC-e) |
 | 3      | `lista_de_compras`                                        |
+| 4      | `equivalencias` (nomes diferentes para o mesmo produto)   |
 
 - A versão do banco fica em `PRAGMA user_version`.
 - `MIGRACOES` é uma lista; a posição `n` leva o banco da versão `n` para `n+1`.

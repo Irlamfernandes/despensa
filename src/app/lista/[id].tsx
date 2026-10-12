@@ -3,12 +3,12 @@ import { useCallback } from 'react';
 
 import type { Banco } from '@/data/banco';
 import { useBanco, useConsulta } from '@/data/hooks';
-import { alterarItemDaLista, carregarLista, removerDaLista } from '@/data/lista';
+import { alterarItemDaLista, carregarLista, diminuirNaLista, removerDaLista } from '@/data/lista';
 import { descreverSituacao, type ItemDaListaValido, type SituacaoDoItem } from '@/domain/lista';
 import { formatarNumero } from '@/domain/quantidade';
-import { Cartao, Tela, TextoSuave, Titulo, Vazio } from '@/ui/basicos';
+import { Cartao, Secao, Tela, TextoSuave, Titulo, Vazio } from '@/ui/basicos';
 import { Botao } from '@/ui/controles';
-import { FormularioDaLista } from '@/ui/formulario-da-lista';
+import { FormularioDaLista, FormularioDeDiminuir } from '@/ui/formulario-da-lista';
 import { Carregavel } from '@/ui/listas';
 
 async function buscarItem(banco: Banco, id: string): Promise<SituacaoDoItem | null> {
@@ -20,6 +20,10 @@ function EdicaoDoItem({ item }: { item: SituacaoDoItem }) {
   const banco = useBanco();
   const salvar = async (valor: ItemDaListaValido) => {
     await alterarItemDaLista(banco, item.id, valor);
+    router.back();
+  };
+  const diminuir = async (comprado: number) => {
+    await diminuirNaLista(banco, item, comprado);
     router.back();
   };
   const remover = async () => {
@@ -34,12 +38,18 @@ function EdicaoDoItem({ item }: { item: SituacaoDoItem }) {
         <Titulo>{item.produto}</Titulo>
         <TextoSuave>{descreverSituacao(item) ?? 'Ainda não comprado'}</TextoSuave>
       </Cartao>
-      <FormularioDaLista
-        inicial={{ produto: item.produto, quantidade, unidade: item.unidade }}
-        rotuloDoBotao="Salvar quantidade"
-        onSalvar={salvar}
-      />
-      <TextoSuave>Ao salvar, essa passa a ser a quantidade que falta comprar.</TextoSuave>
+      {item.falta > 0 ? (
+        <Secao titulo="Comprei sem registrar no app">
+          <FormularioDeDiminuir unidade={item.unidade} onDiminuir={diminuir} />
+        </Secao>
+      ) : null}
+      <Secao titulo="Quanto falta comprar">
+        <FormularioDaLista
+          inicial={{ produto: item.produto, quantidade, unidade: item.unidade }}
+          rotuloDoBotao="Salvar quantidade"
+          onSalvar={salvar}
+        />
+      </Secao>
       <Botao
         titulo="Ver produto"
         variante="secundario"

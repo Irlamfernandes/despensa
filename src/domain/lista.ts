@@ -2,9 +2,11 @@
 // (ou depois da última alteração dele) é descontado sozinho: lista com 30
 // sucos, compra registrada com 3 → faltam 27. Nada é gravado ao comprar; o
 // saldo é sempre calculado a partir das compras, então excluir uma compra
-// devolve a quantidade para a lista.
+// devolve a quantidade para a lista. Produtos com nome diferente contam depois
+// de confirmados como equivalentes (ver sugerirEquivalencias).
 import { errosDe, type Resultado } from './compra';
 import { formatarQuantidade, lerQuantidade, type Unidade } from './quantidade';
+import { saoSemelhantes } from './semelhanca';
 
 export interface ItemDaLista {
   id: string;
@@ -26,9 +28,28 @@ export interface SituacaoDoItem extends ItemDaLista {
   falta: number;
 }
 
+/**
+ * Produto comprado depois que o item entrou na lista, com outro nome e sem
+ * resposta ainda sobre ser o mesmo produto do item.
+ */
+export interface CompraCandidata {
+  itemId: string;
+  produtoId: string;
+  nome: string;
+  quantidade: number;
+  unidade: Unidade;
+}
+
+/** Pergunta para quem usa o app: "esse produto comprado é o item da lista?" */
+export interface SugestaoDeEquivalencia {
+  item: SituacaoDoItem;
+  compra: CompraCandidata;
+}
+
 export interface Lista {
   pendentes: SituacaoDoItem[];
   comprados: SituacaoDoItem[];
+  sugestoes: SugestaoDeEquivalencia[];
 }
 
 // Evita resíduos de ponto flutuante (0,1 + 0,2) nas quantidades em kg ou litro.
@@ -53,16 +74,39 @@ export function situacaoDoItem(
   return { ...item, comprado, falta: arredondar(item.quantidade - comprado) };
 }
 
-/** Separa o que ainda falta comprar do que já foi comprado por completo. */
+/** Compras com nome parecido com o de um item que ainda falta comprar. */
+export function sugerirEquivalencias(
+  pendentes: readonly SituacaoDoItem[],
+  candidatas: readonly CompraCandidata[],
+): SugestaoDeEquivalencia[] {
+  const porId = new Map(pendentes.map((item) => [item.id, item]));
+  return candidatas.flatMap((compra) => {
+    const item = porId.get(compra.itemId);
+    return item && saoSemelhantes(item.produto, compra.nome) ? [{ item, compra }] : [];
+  });
+}
+
+/**
+ * Separa o que ainda falta comprar do que já foi comprado por completo, e
+ * aponta compras de nome parecido que podem ser itens da lista.
+ */
 export function montarLista(
   itens: readonly ItemDaLista[],
   compras: readonly CompraDoItem[],
+  candidatas: readonly CompraCandidata[] = [],
 ): Lista {
   const situacoes = itens.map((item) => situacaoDoItem(item, compras));
+  const pendentes = situacoes.filter((s) => s.falta > 0);
   return {
-    pendentes: situacoes.filter((s) => s.falta > 0),
+    pendentes,
     comprados: situacoes.filter((s) => s.falta === 0),
+    sugestoes: sugerirEquivalencias(pendentes, candidatas),
   };
+}
+
+/** Quanto passa a faltar depois de comprar `quantidade` (fora das compras registradas). */
+export function faltaDepoisDe(situacao: SituacaoDoItem, quantidade: number): number {
+  return Math.max(0, arredondar(situacao.falta - quantidade));
 }
 
 /** "Comprou 3 un de 30 un", "Comprado" ou nada, se ainda não comprou. */
