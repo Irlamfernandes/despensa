@@ -15,7 +15,11 @@ export function lerQuantidade(texto: string): number | null {
 }
 
 /** 1.5 → "1,5"; 2 → "2". */
+export function formatarNumero(valor: number): string {
+  return Number.isInteger(valor) ? valor.toString() : valor.toString().replace('.', ',');
+}
+
+/** 1.5, 'kg' → "1,5 kg". */
 export function formatarQuantidade(valor: number, unidade: Unidade): string {
-  const numero = Number.isInteger(valor) ? valor.toString() : valor.toString().replace('.', ',');
-  return `${numero} ${unidade}`;
+  return `${formatarNumero(valor)} ${unidade}`;
 }

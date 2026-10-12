@@ -48,6 +48,11 @@ function DetalheDaCompra({ compra }: { compra: CompraDetalhada }) {
           />
         ))}
       </Secao>
+      <Botao
+        titulo="Editar nome do mercado"
+        variante="secundario"
+        onPress={() => router.push({ pathname: '/mercado/[id]', params: { id: compra.mercadoId } })}
+      />
       <Botao titulo="Excluir compra" variante="perigo" onPress={confirmarExclusao} />
     </>
   );

@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
 
 import type { Banco } from '@/data/banco';
@@ -11,6 +11,7 @@ import { precoAtualPorMercado } from '@/domain/precos';
 import { formatarQuantidade } from '@/domain/quantidade';
 import { MINIMO_DE_COMPRAS, preverReposicao } from '@/domain/reposicao';
 import { Cartao, Secao, Tela, TextoSuave, Titulo, Vazio } from '@/ui/basicos';
+import { Botao } from '@/ui/controles';
 import { Carregavel, Linha } from '@/ui/listas';
 
 function Reposicao({ produto }: { produto: ProdutoDetalhado }) {
@@ -40,6 +41,11 @@ function DetalheDoProduto({ produto }: { produto: ProdutoDetalhado }) {
         <Titulo>{produto.nome}</Titulo>
         <Reposicao produto={produto} />
       </Cartao>
+      <Botao
+        titulo="Adicionar à lista"
+        variante="secundario"
+        onPress={() => router.push({ pathname: '/lista/novo', params: { produto: produto.nome } })}
+      />
       <Secao titulo="Preço atual por mercado">
         {porMercado.map((p) => (
           <Linha

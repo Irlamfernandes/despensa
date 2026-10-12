@@ -30,6 +30,7 @@ export interface CompraDetalhada {
   id: string;
   data: DataISO;
   total: Centavos;
+  mercadoId: string;
   mercado: string;
   itens: ItemDaCompra[];
 }
@@ -107,7 +108,7 @@ export function listarCompras(banco: Banco): Promise<CompraListada[]> {
 
 export async function buscarCompra(banco: Banco, id: string): Promise<CompraDetalhada | null> {
   const compra = await banco.getFirstAsync<Omit<CompraDetalhada, 'itens'>>(
-    `SELECT c.id, c.data, c.total, m.nome AS mercado
+    `SELECT c.id, c.data, c.total, c.mercado_id AS mercadoId, m.nome AS mercado
        FROM compras c
        JOIN mercados m ON m.id = c.mercado_id
       WHERE c.id = ? AND c.excluido_em IS NULL`,

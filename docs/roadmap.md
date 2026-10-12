@@ -8,6 +8,8 @@
 - [x] Previsão de reposição ("pode estar acabando")
 - [x] Produto: preço atual por mercado e histórico
 - [x] Leitura da NFC-e do RJ pelo QR Code (WebView), sem importar a mesma nota duas vezes
+- [x] Lista de compras que desconta sozinha o que foi comprado
+- [x] Editar o nome do mercado e juntar mercados duplicados
 - [x] Harness: lint com fronteiras de camadas e limites de complexidade, testes de
       domínio e de SQL, CI
 
@@ -22,7 +24,6 @@
 
 - Testar no celular com notas de outros mercados (ver docs/nfce.md).
 - Apelidos de produto: ligar o nome da nota a um produto do catálogo, sem IA.
-- Editar o nome do mercado (a nota traz a razão social).
 
 ### 3. Sincronização entre os dois celulares (Supabase)
 
@@ -33,5 +34,5 @@
 ### Ideias
 
 - Alerta de quantidade fora do comum ("você costuma levar 2 kg, levou 5").
-- Lista de compras gerada a partir da previsão de reposição.
+- Botão para pôr na lista tudo o que "pode estar acabando".
 - Preço por kg/litro para comparar embalagens diferentes.

@@ -39,6 +39,9 @@ export default function LayoutRaiz() {
           <Stack.Screen name="compra/nota" options={{ title: 'Nota fiscal' }} />
           <Stack.Screen name="compra/[id]" options={{ title: 'Compra' }} />
           <Stack.Screen name="produto/[id]" options={{ title: 'Produto' }} />
+          <Stack.Screen name="lista/novo" options={{ title: 'Adicionar à lista' }} />
+          <Stack.Screen name="lista/[id]" options={{ title: 'Item da lista' }} />
+          <Stack.Screen name="mercado/[id]" options={{ title: 'Mercado' }} />
         </Stack>
       </SQLiteProvider>
     </Suspense>

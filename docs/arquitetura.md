@@ -51,4 +51,4 @@ mover o código para a camada certa, não desligar a regra.
 - `src/app/_layout.tsx`: `Stack` raiz.
 - `src/app/(abas)/_layout.tsx`: abas nativas (`expo-router/unstable-native-tabs`
   no SDK 57; vira `expo-router/native-tabs` no SDK 58).
-- Telas empilhadas: `compra/nova`, `compra/[id]`, `produto/[id]`.
+- Telas empilhadas: `compra/*`, `produto/[id]`, `lista/novo`, `lista/[id]`, `mercado/[id]`.

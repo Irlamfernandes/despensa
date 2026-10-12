@@ -7,6 +7,10 @@ export default function LayoutDasAbas() {
         <NativeTabs.Trigger.Label>Resumo</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon md="dashboard" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="lista">
+        <NativeTabs.Trigger.Label>Lista</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="checklist" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="compras">
         <NativeTabs.Trigger.Label>Compras</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon md="shopping_cart" />

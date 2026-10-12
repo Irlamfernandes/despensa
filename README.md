@@ -20,6 +20,10 @@ Feito para uso pessoal, para mim e minha esposa, com os dados no próprio aparel
   o app prevê quando ele deve ser comprado de novo.
 - **Produtos**: preço mais recente em cada mercado (do mais barato ao mais caro)
   e o histórico de preços.
+- **Lista de compras**: o que for comprado sai da lista sozinho. Com 30 sucos na
+  lista e 3 numa compra registrada, a lista passa a mostrar 27.
+- **Nome do mercado editável**: troque a razão social da nota por um nome curto,
+  ou junte dois cadastros do mesmo mercado.
 
 Próximas etapas: sincronização entre os dois celulares e apelidos de produto. Veja o [roadmap](docs/roadmap.md).
 

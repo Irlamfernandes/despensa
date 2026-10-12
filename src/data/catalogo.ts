@@ -97,3 +97,69 @@ export function listarProdutosDoCatalogo(banco: Banco): Promise<Produto[]> {
     [],
   );
 }
+
+export interface MercadoDetalhado extends Mercado {
+  cnpj: string | null;
+}
+
+export function buscarMercado(banco: Banco, id: string): Promise<MercadoDetalhado | null> {
+  return banco.getFirstAsync<MercadoDetalhado>(
+    'SELECT id, nome, cnpj FROM mercados WHERE id = ? AND excluido_em IS NULL',
+    [id],
+  );
+}
+
+export type ResultadoDaRenomeacao = { tipo: 'renomeado' } | { tipo: 'nome-em-uso'; outro: Mercado };
+
+/**
+ * Troca o nome do mercado (ex.: a razão social da nota por um nome curto). Se
+ * outro mercado já usa esse nome, não altera nada e devolve o outro, para a
+ * tela oferecer juntar os dois.
+ */
+export async function renomearMercado(
+  banco: Banco,
+  id: string,
+  nome: string,
+): Promise<ResultadoDaRenomeacao> {
+  const outro = await banco.getFirstAsync<Mercado>(
+    `SELECT id, nome FROM mercados
+      WHERE nome_normalizado = ? AND id <> ? AND excluido_em IS NULL`,
+    [normalizarNome(nome), id],
+  );
+  if (outro) return { tipo: 'nome-em-uso', outro };
+
+  await banco.runAsync(
+    'UPDATE mercados SET nome = ?, nome_normalizado = ?, atualizado_em = ? WHERE id = ?',
+    [nome.trim(), normalizarNome(nome), agoraISO(), id],
+  );
+  return { tipo: 'renomeado' };
+}
+
+/**
+ * Passa as compras de `origemId` para `destinoId` e exclui a origem. O destino
+ * herda o CNPJ da origem se não tiver um, para as próximas notas desse
+ * mercado caírem nele.
+ */
+export async function juntarMercados(
+  banco: Banco,
+  origemId: string,
+  destinoId: string,
+): Promise<void> {
+  const agora = agoraISO();
+  await banco.withTransactionAsync(async () => {
+    await banco.runAsync(
+      'UPDATE compras SET mercado_id = ?, atualizado_em = ? WHERE mercado_id = ?',
+      [destinoId, agora, origemId],
+    );
+    await banco.runAsync('UPDATE mercados SET excluido_em = ?, atualizado_em = ? WHERE id = ?', [
+      agora,
+      agora,
+      origemId,
+    ]);
+    await banco.runAsync(
+      `UPDATE mercados SET cnpj = (SELECT cnpj FROM mercados WHERE id = ?), atualizado_em = ?
+        WHERE id = ? AND cnpj IS NULL`,
+      [origemId, agora, destinoId],
+    );
+  });
+}

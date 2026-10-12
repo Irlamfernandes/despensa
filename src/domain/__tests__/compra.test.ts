@@ -3,6 +3,7 @@ import {
   normalizarNome,
   validarCompra,
   validarItem,
+  validarNomeDoMercado,
   type ItemValido,
 } from '../compra';
 
@@ -92,5 +93,18 @@ describe('descontoDaCompra', () => {
     expect(descontoDaCompra({ mercado: 'A', data: '2026-10-01', itens: [item], total: 1000 })).toBe(
       0,
     );
+  });
+});
+
+describe('validarNomeDoMercado', () => {
+  it('limpa espaços e recusa nome vazio', () => {
+    expect(validarNomeDoMercado('  Mercado   do Bairro ')).toEqual({
+      ok: true,
+      valor: 'Mercado do Bairro',
+    });
+    expect(validarNomeDoMercado('   ')).toEqual({
+      ok: false,
+      erros: ['Informe o nome do mercado.'],
+    });
   });
 });

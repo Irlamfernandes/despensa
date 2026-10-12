@@ -7,15 +7,16 @@ Banco SQLite local (`despensa.db`), criado e atualizado por
 
 ```
 mercados ─┐
-          └──< compras ──< itens_compra >── produtos
+          └──< compras ──< itens_compra >── produtos ──< lista_de_compras
 ```
 
-| Tabela         | Campos principais                                                             | Observações                                                             |
-| -------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `mercados`     | `nome`, `nome_normalizado`, `cnpj`                                            | Nome e CNPJ únicos entre os não excluídos                               |
-| `produtos`     | `nome`, `nome_normalizado`, `unidade`                                         | Unidade padrão do produto: `un`, `kg`, `g`, `l`, `ml`                   |
-| `compras`      | `mercado_id`, `data`, `total`, `origem`, `chave_nfce`                         | `origem`: `manual` ou `nfce`; `chave_nfce` única entre as não excluídas |
-| `itens_compra` | `compra_id`, `produto_id`, `quantidade`, `unidade`, `preco_unitario`, `total` | Unidade do item pode diferir da do produto                              |
+| Tabela             | Campos principais                                                             | Observações                                                             |
+| ------------------ | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `mercados`         | `nome`, `nome_normalizado`, `cnpj`                                            | Nome e CNPJ únicos entre os não excluídos                               |
+| `produtos`         | `nome`, `nome_normalizado`, `unidade`                                         | Unidade padrão do produto: `un`, `kg`, `g`, `l`, `ml`                   |
+| `compras`          | `mercado_id`, `data`, `total`, `origem`, `chave_nfce`                         | `origem`: `manual` ou `nfce`; `chave_nfce` única entre as não excluídas |
+| `itens_compra`     | `compra_id`, `produto_id`, `quantidade`, `unidade`, `preco_unitario`, `total` | Unidade do item pode diferir da do produto                              |
+| `lista_de_compras` | `produto_id`, `quantidade`, `unidade`, `desde`                                | Um item por produto entre os não excluídos (ver abaixo)                 |
 
 ## Convenções
 
@@ -35,12 +36,32 @@ Pensadas para a sincronização futura com o Supabase (Postgres):
 - `PRAGMA foreign_keys = ON` e `CHECK` nas colunas garantem integridade mesmo
   se um bug escapar da validação do domínio.
 
+## Lista de compras
+
+O saldo de cada item **não é gravado**: é calculado em `src/domain/lista.ts` a
+partir dos itens de compra do mesmo produto cujas compras foram registradas
+(`compras.criado_em`) depois de `lista_de_compras.desde`.
+
+- Lista com 30, compra com 3 → faltam 27. Excluir a compra devolve os 3.
+- Alterar a quantidade de um item atualiza `desde`: o novo número já é o que falta.
+- Compra em outra unidade (lista em `un`, nota em `kg`) resolve o item, porque não
+  dá para converter.
+- O vínculo é pelo produto do catálogo: o nome na lista precisa ser o mesmo da
+  nota. Apelidos de produto (roadmap) vão resolver nomes diferentes.
+
+## Mercados
+
+- Renomear mantém o CNPJ: as próximas notas do mercado continuam caindo nele.
+- Renomear para o nome de outro mercado oferece **juntar**: as compras passam
+  para o outro, a origem é excluída e o destino herda o CNPJ se não tiver um.
+
 ## Migrações
 
 | Versão | O que muda                                                |
 | ------ | --------------------------------------------------------- |
 | 1      | Tabelas iniciais                                          |
 | 2      | `compras.chave_nfce` e `mercados.cnpj` (leitura da NFC-e) |
+| 3      | `lista_de_compras`                                        |
 
 - A versão do banco fica em `PRAGMA user_version`.
 - `MIGRACOES` é uma lista; a posição `n` leva o banco da versão `n` para `n+1`.

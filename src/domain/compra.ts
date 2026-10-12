@@ -47,10 +47,10 @@ export function normalizarNome(nome: string): string {
 }
 
 /** Uma regra de validação: [falhou?, mensagem]. */
-type Verificacao = readonly [falhou: boolean, mensagem: string];
+export type Verificacao = readonly [falhou: boolean, mensagem: string];
 
 /** Mensagens das verificações que falharam, na ordem em que foram declaradas. */
-function errosDe(verificacoes: readonly Verificacao[]): string[] {
+export function errosDe(verificacoes: readonly Verificacao[]): string[] {
   return verificacoes.filter(([falhou]) => falhou).map(([, mensagem]) => mensagem);
 }
 
@@ -106,4 +106,11 @@ export function validarCompra(compra: CompraRascunho): Resultado<CompraValida> {
 export function descontoDaCompra(compra: CompraValida): Centavos {
   const soma = compra.itens.reduce((total, item) => total + item.total, 0);
   return Math.max(0, soma - compra.total);
+}
+
+export function validarNomeDoMercado(texto: string): Resultado<string> {
+  const nome = texto.trim().replace(/\s+/g, ' ');
+  return nome === ''
+    ? { ok: false, erros: ['Informe o nome do mercado.'] }
+    : { ok: true, valor: nome };
 }

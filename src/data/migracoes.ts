@@ -67,6 +67,22 @@ const MIGRACOES: readonly string[] = [
   CREATE UNIQUE INDEX mercados_cnpj_unico ON mercados (cnpj)
     WHERE cnpj IS NOT NULL AND excluido_em IS NULL;
   `,
+  // 3: lista de compras. `desde` marca quando a quantidade foi definida: só as
+  // compras registradas depois disso são descontadas (ver src/domain/lista.ts).
+  `
+  CREATE TABLE lista_de_compras (
+    id TEXT PRIMARY KEY NOT NULL,
+    produto_id TEXT NOT NULL REFERENCES produtos (id),
+    quantidade REAL NOT NULL CHECK (quantidade > 0),
+    unidade TEXT NOT NULL CHECK (unidade IN ('un', 'kg', 'g', 'l', 'ml')),
+    desde TEXT NOT NULL,
+    criado_em TEXT NOT NULL,
+    atualizado_em TEXT NOT NULL,
+    excluido_em TEXT
+  );
+  CREATE UNIQUE INDEX lista_de_compras_produto_unico ON lista_de_compras (produto_id)
+    WHERE excluido_em IS NULL;
+  `,
 ];
 
 export const VERSAO_ATUAL = MIGRACOES.length;

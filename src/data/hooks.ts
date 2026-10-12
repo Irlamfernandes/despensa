@@ -19,21 +19,27 @@ export function useBanco(): Banco {
  * módulo ou envolva em useCallback quando depender de parâmetros da rota.
  */
 export function useConsulta<T>(consulta: Consulta<T>): Carga<T> {
+  return useConsultaRecarregavel(consulta)[0];
+}
+
+/** Como useConsulta, mais uma função para recarregar depois de gravar na própria tela. */
+export function useConsultaRecarregavel<T>(consulta: Consulta<T>): [Carga<T>, () => void] {
   const banco = useBanco();
   const [carga, setCarga] = useState<Carga<T>>({ status: 'carregando' });
 
-  useFocusEffect(
-    useCallback(() => {
-      let ativa = true;
-      consulta(banco).then(
-        (dados) => ativa && setCarga({ status: 'pronto', dados }),
-        (erro: unknown) => ativa && setCarga({ status: 'erro', erro }),
-      );
-      return () => {
-        ativa = false;
-      };
-    }, [banco, consulta]),
-  );
+  // Usada no foco (com cancelamento ao sair da tela) e para recarregar à mão.
+  const carregar = useCallback(() => {
+    let ativa = true;
+    consulta(banco).then(
+      (dados) => ativa && setCarga({ status: 'pronto', dados }),
+      (erro: unknown) => ativa && setCarga({ status: 'erro', erro }),
+    );
+    return () => {
+      ativa = false;
+    };
+  }, [banco, consulta]);
 
-  return carga;
+  useFocusEffect(carregar);
+
+  return [carga, carregar];
 }

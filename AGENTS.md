@@ -63,7 +63,7 @@ Uma tarefa só está pronta quando `npm run check` passa sem erros nem avisos.
 
 ```
 src/
-  app/        telas (Expo Router): (abas)/ = Resumo, Compras, Produtos
+  app/        telas (Expo Router): (abas)/ = Resumo, Lista, Compras, Produtos
   domain/     regras puras + testes em __tests__/ (nfce/ = leitura da nota)
   data/       SQLite: migrações, repositórios, hooks; testes com SQLite real
   ui/         componentes visuais e tema
