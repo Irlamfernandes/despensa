@@ -22,6 +22,8 @@ Feito para uso pessoal, para mim e minha esposa, com os dados no próprio aparel
   e o histórico de preços.
 - **Lista de compras**: o que for comprado sai da lista sozinho. Com 30 sucos na
   lista e 3 numa compra registrada, a lista passa a mostrar 27.
+  Se a nota tiver outro nome ("SUCO PO TANG 25G"), o app compara as palavras e
+  pergunta se é o mesmo produto. Também dá para diminuir à mão.
 - **Nome do mercado editável**: troque a razão social da nota por um nome curto,
   ou junte dois cadastros do mesmo mercado.
 

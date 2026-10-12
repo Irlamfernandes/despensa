@@ -9,6 +9,7 @@
 - [x] Produto: preço atual por mercado e histórico
 - [x] Leitura da NFC-e do RJ pelo QR Code (WebView), sem importar a mesma nota duas vezes
 - [x] Lista de compras que desconta sozinha o que foi comprado
+- [x] Lista: pergunta se um produto de nome parecido é o item da lista; diminuir à mão
 - [x] Editar o nome do mercado e juntar mercados duplicados
 - [x] Harness: lint com fronteiras de camadas e limites de complexidade, testes de
       domínio e de SQL, CI

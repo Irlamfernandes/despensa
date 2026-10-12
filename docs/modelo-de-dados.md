@@ -17,6 +17,7 @@ mercados ─┐
 | `compras`          | `mercado_id`, `data`, `total`, `origem`, `chave_nfce`                         | `origem`: `manual` ou `nfce`; `chave_nfce` única entre as não excluídas |
 | `itens_compra`     | `compra_id`, `produto_id`, `quantidade`, `unidade`, `preco_unitario`, `total` | Unidade do item pode diferir da do produto                              |
 | `lista_de_compras` | `produto_id`, `quantidade`, `unidade`, `desde`                                | Um item por produto entre os não excluídos (ver abaixo)                 |
+| `equivalencias`    | `produto_id`, `equivalente_id`, `equivale`                                    | Respostas a "é o mesmo produto?" da lista                               |
 
 ## Convenções
 
