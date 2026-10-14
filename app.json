@@ -14,7 +14,10 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.irlamfernandes.despensa"
+      "package": "com.irlamfernandes.despensa",
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
     },
     "platforms": [
       "android"
@@ -42,6 +45,13 @@
     "scheme": "despensa",
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "86ec5a26-5713-4e5d-bf1e-9a6b0e6254ac"
+      }
+    },
+    "owner": "irlam"
   }
 }
