@@ -27,16 +27,36 @@ export function chaveValida(chave: string): boolean {
   return digitoVerificador(chave.slice(0, -1)) === Number(chave.slice(-1));
 }
 
+function decodificar(conteudo: string): string {
+  try {
+    return decodeURIComponent(conteudo);
+  } catch {
+    return conteudo;
+  }
+}
+
 /**
- * Extrai a chave do conteúdo lido no QR Code. Aceita a URL de consulta
- * (`...?p=CHAVE|versao|ambiente...`) ou a chave digitada (com ou sem espaços).
- * Só devolve chaves válidas de NFC-e (modelo 65).
+ * Candidatas a chave dentro do conteúdo do QR: o primeiro campo do parâmetro
+ * `p=` (quando existe) e toda sequência de 44 dígitos. Cobre os dois formatos
+ * da SEFAZ-RJ: `...?p=CHAVE|...` e `...?CHAVE|versao|ambiente|...` (sem `p=`).
+ */
+function candidatasDeChave(texto: string): string[] {
+  const doParametro = /[?&]p=([^&|]+)/.exec(texto)?.[1];
+  const sequencias = texto.match(/\d{44}/g) ?? [];
+  return [doParametro, ...sequencias].filter((v): v is string => Boolean(v));
+}
+
+/**
+ * Extrai a chave do conteúdo lido no QR Code. Aceita a URL de consulta (com ou
+ * sem `p=`) e a chave digitada (com ou sem espaços). Só devolve chaves válidas
+ * de NFC-e (modelo 65).
  */
 export function extrairChave(conteudo: string): string | null {
-  const parametro = /[?&]p=([^&]+)/.exec(conteudo)?.[1];
-  const candidata = (parametro ? decodeURIComponent(parametro).split('|')[0] : conteudo) ?? '';
-  const chave = candidata.replace(/\s/g, '');
-  return chaveValida(chave) && chave.slice(20, 22) === MODELO_NFCE ? chave : null;
+  const texto = decodificar(conteudo).replace(/\s/g, '');
+  const chave = candidatasDeChave(texto).find(
+    (c) => chaveValida(c) && c.slice(20, 22) === MODELO_NFCE,
+  );
+  return chave ?? null;
 }
 
 export function descreverChave(chave: string): DadosDaChave {

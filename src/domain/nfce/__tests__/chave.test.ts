@@ -19,6 +19,8 @@ describe('extrairChave', () => {
   it.each([
     [`http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=${CHAVE}|3|1`],
     [`https://consultadfe.fazenda.rj.gov.br/consultaNFCe/QRCode?p=${CHAVE}%7C2%7C1%7C1%7CABC`],
+    // Formato sem `p=`: a chave vem logo após o `?`, seguida de outros campos.
+    [`http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?${CHAVE}|2|1|14|474.85|ABC123|3|1`],
     ['3326 1012 3456 7800 0195 6500 1000 0123 4511 2345 6783'],
   ])('lê a chave de "%s"', (conteudo) => {
     expect(extrairChave(conteudo)).toBe(CHAVE);
