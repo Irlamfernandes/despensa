@@ -18,9 +18,30 @@ câmera (expo-camera)
             └─ salvarCompra(compra, { chave, cnpj })           → grava com origem 'nfce'
 ```
 
+## Formatos de QR Code (adicione quando aparecer um novo)
+
+Mercados diferentes geram o QR de jeitos diferentes. Já vimos **dois**:
+
+1. `…/consultaNFCe/QRCode?p=CHAVE|versão|ambiente` — com o parâmetro `p=`.
+2. `…/consultaNFCe/QRCode?CHAVE|2|1|14|474.85|HASH|3|1` — a chave vem **logo após
+   o `?`**, sem `p=` (visto no Cereais Bramil, Vassouras, out/2026).
+
+Por isso `extrairChave` (domain/nfce/chave.ts) **não tem um "modo" por mercado**:
+ele procura qualquer sequência de 44 dígitos no conteúdo e valida pelo dígito
+verificador e pelo modelo 65. Assim, um novo formato de QR geralmente já
+funciona sem mexer no código. Se algum dia aparecer um QR que o extrairChave não
+leia, acrescente o caso em `chave.test.ts` e ajuste a busca — nunca crie um ramo
+específico por mercado sem teste.
+
+O que **pode** variar por estado/mercado e exigir ajuste é o **layout da página**
+da SEFAZ (os seletores da seção abaixo). Quando uma nota abrir a página mas não
+for lida, veja a mensagem crua (logs temporários) e ajuste os seletores, com uma
+página de exemplo nova em `__tests__/`.
+
 ## O que aprendemos sobre o portal da SEFAZ-RJ (out/2026)
 
-- O QR Code aponta para `http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=CHAVE|versão|ambiente`.
+- O QR Code aponta para `http://www4.fazenda.rj.gov.br/consultaNFCe/QRCode?p=CHAVE|versão|ambiente`
+  (ou, em alguns mercados, sem o `p=` — ver "Formatos de QR Code" acima).
 - Esse endereço **redireciona para `http://consultadfe.fazenda.rj.gov.br/...`, que não
   responde** (o servidor só aceita https). Trocando para `https://` a página abre.
   O Android também bloqueia http em apps. Por isso `decidirNavegacao` troca todo
