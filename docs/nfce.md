@@ -1,22 +1,34 @@
 # Leitura da NFC-e (cupom fiscal)
 
-O app lê o QR Code do cupom, abre a consulta pública da SEFAZ numa WebView e
-extrai os itens da página. Hoje só o **Rio de Janeiro (UF 33)** é suportado.
+A pessoa digita (ou cola) a **chave de acesso** do cupom; o app abre a consulta
+pública da SEFAZ numa WebView, ela resolve o captcha, e o app extrai os itens da
+página. Hoje só o **Rio de Janeiro (UF 33)** é suportado.
 
-## Fluxo
+Não há leitura por câmera/QR: o portal da SEFAZ-RJ bloqueia o IP depois de poucas
+consultas automáticas, então o controle fica com a pessoa (ela navega, resolve o
+captcha e troca de rede se bloquear). Ver "Por que a consulta é manual".
+
+## Fluxo (tela `compra/consulta`)
 
 ```
-câmera (expo-camera)
-  └─ lerQrDaNota(conteúdo)            domain/nfce/qr.ts       → chave de acesso válida?
-       └─ tela compra/nota
-            ├─ buscarCompraPorChave()  data/compras.ts         → já importada? mostra a compra
-            ├─ WebView abre enderecosDeConsulta(qr, chave)     → tenta cada URL em ordem
-            │    ├─ decidirNavegacao(url)                      → segue / troca http→https / bloqueia
-            │    └─ SCRIPT_DE_EXTRACAO (injetado)              → envia os textos crus da página
-            ├─ proximoEstado(estado, evento)  domain/nfce/leitura.ts → máquina de estados
-            ├─ converterNota(bruta)    domain/nfce/nota.ts     → números, datas, unidades
-            └─ salvarCompra(compra, { chave, cnpj })           → grava com origem 'nfce'
+CampoDaChave → lerQrDaNota(texto)     domain/nfce/qr.ts   → chave válida? (aceita chave ou URL do QR)
+  └─ WebView em URL_CONSULTA_POR_CHAVE  domain/nfce/enderecos.ts
+       ├─ scriptPreencher(chave)                          → preenche o campo da chave na página
+       ├─ corrigirParaHttps(url)                          → troca http→https nos links da SEFAZ-RJ
+       ├─ SCRIPT_DE_EXTRACAO (injetado)                   → envia os textos crus quando a nota aparece
+       ├─ lerMensagem(texto)        domain/nfce/leitura.ts → nota crua | 'sem-nota' | null
+       ├─ buscarCompraPorChave()    data/compras.ts        → já importada? mostra a compra
+       ├─ converterNota(bruta)      domain/nfce/nota.ts     → números, datas, unidades
+       └─ salvarCompra(compra, { chave, cnpj })            → grava com origem 'nfce'
 ```
+
+## Por que a consulta é manual
+
+O portal **bloqueia o IP** depois de poucas consultas (visto: ~2 notas seguidas).
+A chave de acesso e o QR **não contêm os itens** — eles só existem na página da
+SEFAZ. Como qualquer busca automática do app seria bloqueada, a pessoa faz a
+consulta como um cidadão comum (digita a chave, passa o captcha) e o app só
+observa a página para capturar a nota. Se bloquear, ela troca para o 4G.
 
 ## Formatos de QR Code (adicione quando aparecer um novo)
 

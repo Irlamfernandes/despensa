@@ -15,10 +15,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.irlamfernandes.despensa",
-      "versionCode": 2,
-      "permissions": [
-        "android.permission.CAMERA"
-      ]
+      "versionCode": 2
     },
     "platforms": [
       "android"
@@ -26,13 +23,6 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      [
-        "expo-camera",
-        {
-          "recordAudioAndroid": false,
-          "barcodeScannerEnabled": true
-        }
-      ],
       [
         "expo-splash-screen",
         {

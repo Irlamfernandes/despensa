@@ -35,8 +35,7 @@ export default function LayoutRaiz() {
         >
           <Stack.Screen name="(abas)" options={{ headerShown: false }} />
           <Stack.Screen name="compra/nova" options={{ title: 'Nova compra' }} />
-          <Stack.Screen name="compra/escanear" options={{ title: 'Escanear nota fiscal' }} />
-          <Stack.Screen name="compra/nota" options={{ title: 'Nota fiscal' }} />
+          <Stack.Screen name="compra/consulta" options={{ title: 'Consultar nota' }} />
           <Stack.Screen name="compra/[id]" options={{ title: 'Compra' }} />
           <Stack.Screen name="produto/[id]" options={{ title: 'Produto' }} />
           <Stack.Screen name="lista/novo" options={{ title: 'Adicionar à lista' }} />

@@ -75,7 +75,10 @@ export default function TelaDeResumo() {
   return (
     <Tela semCabecalho>
       <Titulo>Despensa</Titulo>
-      <Botao titulo="Escanear nota fiscal" onPress={() => router.push('/compra/escanear')} />
+      <Botao
+        titulo="Consultar pela chave de acesso"
+        onPress={() => router.push('/compra/consulta')}
+      />
       <Botao
         titulo="Registrar manualmente"
         variante="secundario"
